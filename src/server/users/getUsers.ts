@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
-import { adminMiddleware } from "../auth-middleware";
+import { authMiddleware } from "../auth-middleware";
 import { users } from "@/lib/db/schema/auth";
 import { db } from "@/lib/db/connection";
 import { desc, eq } from "drizzle-orm";
 
 export const getUsers = createServerFn({ method: "GET" })
-  .middleware([adminMiddleware])
+  .middleware([authMiddleware])
   .handler(async ({ context }) => {
     const [user] = await db
       .select({
