@@ -87,7 +87,7 @@ export function ApproveDialog({
             Cancel
           </Button>
           <Button onClick={onConfirm} className="bg-primary hover:bg-primary/90">
-            <CheckCircle className="h-4 w-4 mr-2" />
+            <CheckCircle className="h-4 w-4" />
             Confirm Approval
           </Button>
         </DialogFooter>

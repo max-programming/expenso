@@ -168,7 +168,7 @@ export const Route = createFileRoute('/admin/approval-rules')({
         </div>
 
         <Button onClick={handleAdd}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Add Rule
         </Button>
       </section>
@@ -188,7 +188,7 @@ export const Route = createFileRoute('/admin/approval-rules')({
             <p className="text-sm text-muted-foreground">Try adjusting your filters or create a new rule.</p>
             <div className="mt-4">
               <Button onClick={handleAdd}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="h-4 w-4" />
                 Create your first rule
               </Button>
             </div>
@@ -221,7 +221,7 @@ export const Route = createFileRoute('/admin/approval-rules')({
         onAddStep={addStep}
       />
 
-      <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
+      <AlertDialog open={!!pendingDelete} onOpenChange={(o: any) => !o && setPendingDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this rule?</AlertDialogTitle>
