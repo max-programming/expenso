@@ -4,11 +4,13 @@ import { adminMiddleware } from "../auth-middleware";
 import { db } from "@/lib/db/connection";
 import { expenseCategories } from "@/lib/db/schema/expenses";
 import { users } from "@/lib/db/schema/auth";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { zExpenseCategoriesId } from "@/lib/id";
 
-export const addCategory = createServerFn({ method: "POST" })
+export const updateCategory = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
+      id: zExpenseCategoriesId,
       name: z.string().min(1, "Name is required"),
       description: z.string().optional().nullable(),
     })
@@ -24,11 +26,19 @@ export const addCategory = createServerFn({ method: "POST" })
       throw new Error("User or company not found");
     }
 
-    await db.insert(expenseCategories).values({
-      name: data.name,
-      description: data.description,
-      companyId: user.companyId,
-    });
+    await db
+      .update(expenseCategories)
+      .set({
+        name: data.name,
+        description: data.description,
+        companyId: user.companyId,
+      })
+      .where(
+        and(
+          eq(expenseCategories.id, data.id),
+          eq(expenseCategories.companyId, user.companyId)
+        )
+      );
 
     return {
       success: true,

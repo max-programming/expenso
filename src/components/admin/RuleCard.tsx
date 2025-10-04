@@ -41,7 +41,6 @@ export function RuleCard({ rule, users, categories, onEdit, onDelete }: Props) {
               <Badge variant="secondary">{ruleTypeLabel[rule.ruleType]}</Badge>
               <Badge variant="outline">Manager first: {rule.isManagerFirst ? "Yes" : "No"}</Badge>
               <Badge variant="outline">Category: {categoryName}</Badge>
-              {rule.amount && <Badge variant="outline">Min: {rule.amount}</Badge>}
               {typeof rule.approvalPercentage === "number" && (
                 <Badge variant="outline">{rule.approvalPercentage}% required</Badge>
               )}

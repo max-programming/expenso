@@ -2,17 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 import { adminMiddleware } from "../auth-middleware";
 import { db } from "@/lib/db/connection";
-import { expenseCategories } from "@/lib/db/schema/expenses";
 import { users } from "@/lib/db/schema/auth";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
-export const addCategory = createServerFn({ method: "POST" })
-  .inputValidator(
-    z.object({
-      name: z.string().min(1, "Name is required"),
-      description: z.string().optional().nullable(),
-    })
-  )
+export const deleteUser = createServerFn({ method: "POST" })
+  .inputValidator(z.object({ id: z.string() }))
   .middleware([adminMiddleware])
   .handler(async ({ data, context }) => {
     const [user] = await db
@@ -24,13 +18,9 @@ export const addCategory = createServerFn({ method: "POST" })
       throw new Error("User or company not found");
     }
 
-    await db.insert(expenseCategories).values({
-      name: data.name,
-      description: data.description,
-      companyId: user.companyId,
-    });
+    const { id } = data;
 
-    return {
-      success: true,
-    };
+    await db
+      .delete(users)
+      .where(and(eq(users.id, id), eq(users.companyId, user.companyId)));
   });
