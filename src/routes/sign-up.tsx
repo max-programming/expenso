@@ -1,14 +1,24 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, User, Globe } from 'lucide-react'
+import { getCountriesAndCurrencies } from '../server/get-countries-and-currencies'
 
 export const Route = createFileRoute('/sign-up')({
   component: RouteComponent,
+  loader: async () => {
+    const countriesAndCurrencies = await getCountriesAndCurrencies()
+    return { countriesAndCurrencies }
+  },
 })
 
 function RouteComponent() {
+  const { countriesAndCurrencies } = Route.useLoaderData()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
+
+  const sortedCountries = countriesAndCurrencies
+    .map((country) => country.name.common)
+    .sort((a, b) => a.localeCompare(b))
 
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-16">
@@ -67,6 +77,48 @@ function RouteComponent() {
                   autoComplete="email"
                   className="w-full rounded-xl border border-border bg-background/60 py-3 pl-11 pr-4 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="country"
+                className="block text-sm font-medium text-muted-foreground mb-2"
+              >
+                Country
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground pointer-events-none">
+                  <Globe className="w-5 h-5" aria-hidden="true" />
+                </span>
+                <select
+                  id="country"
+                  name="country"
+                  autoComplete="country"
+                  className="w-full rounded-xl border border-border bg-background/60 py-3 pl-11 pr-4 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+                >
+                  <option value="">Select your country</option>
+                  {sortedCountries.map((country) => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-muted-foreground"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
               </div>
             </div>
 
