@@ -71,7 +71,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
     location: { pathname },
   } = useRouterState()
 
-  const hideHeader = pathname === '/sign-in' || pathname === '/sign-up'
+  const hideHeader = pathname === '/sign-in' || pathname === '/sign-up' || pathname === '/'
 
   return (
     <>
