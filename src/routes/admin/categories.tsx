@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { Plus, Trash2, Pencil } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Trash2, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,11 +9,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -21,10 +20,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
+import { AddCategoryDialog } from "@/components/categories/add-category-dialog";
+import { getCategories } from "@/server/categories/getCategories";
 
 export const Route = createFileRoute("/admin/categories")({
   component: RouteComponent,
+  loader: () => getCategories(),
   head: () => ({
     meta: [
       {
@@ -34,94 +36,63 @@ export const Route = createFileRoute("/admin/categories")({
   }),
 });
 
-type Category = {
-  id: string
-  name: string
-  description: string
-}
+type Category = Awaited<ReturnType<typeof getCategories>>[number];
 
 function RouteComponent() {
-  const [categories, setCategories] = useState<Category[]>([
-    {
-      id: '1',
-      name: 'Food & Dining',
-      description: 'Expenses related to food, restaurants, and groceries',
-    },
-    {
-      id: '2',
-      name: 'Transportation',
-      description: 'Public transport, fuel, and vehicle maintenance',
-    },
-    {
-      id: '3',
-      name: 'Entertainment',
-      description: 'Movies, games, hobbies, and recreational activities',
-    },
-  ])
-  const [isAddOpen, setIsAddOpen] = useState(false)
-  const [isEditOpen, setIsEditOpen] = useState(false)
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [newCategory, setNewCategory] = useState({ name: '', description: '' })
-  const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null)
-  const [editForm, setEditForm] = useState({ name: '', description: '' })
-
-  const handleAddCategory = () => {
-    if (newCategory.name.trim()) {
-      setCategories([
-        ...categories,
-        {
-          id: Date.now().toString(),
-          name: newCategory.name,
-          description: newCategory.description,
-        },
-      ])
-      setNewCategory({ name: '', description: '' })
-      setIsAddOpen(false)
-    }
-  }
+  const categories = Route.useLoaderData();
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
+  // const [editForm, setEditForm] = useState({ name: "", description: "" });
 
   const handleDeleteCategory = () => {
     if (selectedCategory) {
-      setCategories(categories.filter((cat) => cat.id !== selectedCategory.id))
-      setIsDeleteOpen(false)
-      setSelectedCategory(null)
+      // setCategories(categories.filter(cat => cat.id !== selectedCategory.id));
+      setIsDeleteOpen(false);
+      setSelectedCategory(null);
     }
-  }
+  };
 
   const openEditDialog = (category: Category) => {
-    setCategoryToEdit(category)
-    setEditForm({ name: category.name, description: category.description })
-    setIsEditOpen(true)
-  }
+    setCategoryToEdit(category);
+    // setEditForm({ name: category.name, description: category.description });
+    setIsEditOpen(true);
+  };
 
   const handleEditCategory = () => {
-    if (!categoryToEdit) return
+    if (!categoryToEdit) return;
 
-    const trimmedName = editForm.name.trim()
-    if (!trimmedName) return
+    // const trimmedName = editForm.name.trim();
+    // if (!trimmedName) return;
 
-    setCategories((prev) =>
-      prev.map((category) =>
-        category.id === categoryToEdit.id
-          ? { ...category, name: trimmedName, description: editForm.description }
-          : category,
-      ),
-    )
+    // setCategories(prev =>
+    //   prev.map(category =>
+    //     category.id === categoryToEdit.id
+    //       ? {
+    //           ...category,
+    //           name: trimmedName,
+    //           description: editForm.description,
+    //         }
+    //       : category
+    //   )
+    // );
 
-    setIsEditOpen(false)
-    setCategoryToEdit(null)
-    setEditForm({ name: '', description: '' })
-  }
+    setIsEditOpen(false);
+    setCategoryToEdit(null);
+    // setEditForm({ name: "", description: "" });
+  };
 
   const openDeleteDialog = (category: Category) => {
-    setSelectedCategory(category)
-    setIsDeleteOpen(true)
-  }
+    setSelectedCategory(category);
+    setIsDeleteOpen(true);
+  };
 
   const badgeStyles =
-    'inline-flex items-center rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary'
-
+    "inline-flex items-center rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary";
 
   return (
     <div className="min-h-screen bg-background">
@@ -139,62 +110,7 @@ function RouteComponent() {
             </div>
 
             {/* Add Category Dialog */}
-            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Category
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                  <DialogTitle>Add New Category</DialogTitle>
-                  <DialogDescription>
-                    Create a new category for organizing your expenses
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Category Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="e.g., Food & Dining"
-                      value={newCategory.name}
-                      onChange={(e) =>
-                        setNewCategory({ ...newCategory, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Brief description of this category"
-                      value={newCategory.description}
-                      onChange={(e) =>
-                        setNewCategory({
-                          ...newCategory,
-                          description: e.target.value,
-                        })
-                      }
-                      rows={3}
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsAddOpen(false)
-                      setNewCategory({ name: '', description: '' })
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleAddCategory}>Add Category</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <AddCategoryDialog open={isAddOpen} onOpenChange={setIsAddOpen} />
           </div>
         </div>
 
@@ -221,7 +137,7 @@ function RouteComponent() {
                   </TableCell>
                 </TableRow>
               ) : (
-                categories.map((category) => (
+                categories.map(category => (
                   <TableRow key={category.id}>
                     <TableCell>
                       <span className={badgeStyles}>{category.name}</span>
@@ -259,11 +175,11 @@ function RouteComponent() {
         {/* Edit Category Dialog */}
         <Dialog
           open={isEditOpen}
-          onOpenChange={(open) => {
-            setIsEditOpen(open)
+          onOpenChange={open => {
+            setIsEditOpen(open);
             if (!open) {
-              setCategoryToEdit(null)
-              setEditForm({ name: '', description: '' })
+              setCategoryToEdit(null);
+              // setEditForm({ name: "", description: "" });
             }
           }}
         >
@@ -279,13 +195,13 @@ function RouteComponent() {
                 <Label htmlFor="edit-name">Category Name</Label>
                 <Input
                   id="edit-name"
-                  value={editForm.name}
-                  onChange={(event) =>
-                    setEditForm((current) => ({
-                      ...current,
-                      name: event.target.value,
-                    }))
-                  }
+                  // value={editForm.name}
+                  // onChange={event =>
+                  //   setEditForm(current => ({
+                  //     ...current,
+                  //     name: event.target.value,
+                  //   }))
+                  // }
                   placeholder="e.g., Groceries"
                 />
               </div>
@@ -293,13 +209,13 @@ function RouteComponent() {
                 <Label htmlFor="edit-description">Description</Label>
                 <Textarea
                   id="edit-description"
-                  value={editForm.description}
-                  onChange={(event) =>
-                    setEditForm((current) => ({
-                      ...current,
-                      description: event.target.value,
-                    }))
-                  }
+                  // value={editForm.description}
+                  // onChange={event =>
+                  //   setEditForm(current => ({
+                  //     ...current,
+                  //     description: event.target.value,
+                  //   }))
+                  // }
                   rows={3}
                   placeholder="Brief description of this category"
                 />
@@ -309,14 +225,17 @@ function RouteComponent() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setIsEditOpen(false)
-                  setCategoryToEdit(null)
-                  setEditForm({ name: '', description: '' })
+                  setIsEditOpen(false);
+                  setCategoryToEdit(null);
+                  // setEditForm({ name: "", description: "" });
                 }}
               >
                 Cancel
               </Button>
-              <Button onClick={handleEditCategory} disabled={!editForm.name.trim()}>
+              <Button
+                onClick={handleEditCategory}
+                // disabled={!editForm.name.trim()}
+              >
                 Save Changes
               </Button>
             </DialogFooter>
@@ -329,8 +248,8 @@ function RouteComponent() {
             <DialogHeader>
               <DialogTitle>Delete Category</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this category? This action cannot
-                be undone.
+                Are you sure you want to delete this category? This action
+                cannot be undone.
               </DialogDescription>
             </DialogHeader>
             {selectedCategory && (
@@ -347,8 +266,8 @@ function RouteComponent() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setIsDeleteOpen(false)
-                  setSelectedCategory(null)
+                  setIsDeleteOpen(false);
+                  setSelectedCategory(null);
                 }}
               >
                 Cancel
@@ -361,5 +280,5 @@ function RouteComponent() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

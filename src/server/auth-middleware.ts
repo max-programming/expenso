@@ -13,6 +13,39 @@ export const authMiddleware = createMiddleware({ type: "function" }).server(
   }
 );
 
+export const adminMiddleware = createMiddleware({ type: "function" }).server(
+  async ({ next }) => {
+    const { headers } = getRequest();
+    const session = await auth.api.getSession({ headers });
+    if (!session || session.user.role !== "admin") {
+      throw new UnauthorizedError("Unauthorized");
+    }
+    return next({ context: session });
+  }
+);
+
+export const managerMiddleware = createMiddleware({ type: "function" }).server(
+  async ({ next }) => {
+    const { headers } = getRequest();
+    const session = await auth.api.getSession({ headers });
+    if (!session || session.user.role !== "manager") {
+      throw new UnauthorizedError("Unauthorized");
+    }
+    return next({ context: session });
+  }
+);
+
+export const employeeMiddleware = createMiddleware({ type: "function" }).server(
+  async ({ next }) => {
+    const { headers } = getRequest();
+    const session = await auth.api.getSession({ headers });
+    if (!session || session.user.role !== "employee") {
+      throw new UnauthorizedError("Unauthorized");
+    }
+    return next({ context: session });
+  }
+);
+
 export class UnauthorizedError extends Error {
   constructor(message: string) {
     super(message);

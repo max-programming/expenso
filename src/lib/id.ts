@@ -1,6 +1,5 @@
 import { IdHelper, type InferId } from "typed-id";
-
-
+import { createZodIdSchema } from "typed-id/validators/zod";
 
 export const companyIdHelper = new IdHelper("cmp");
 export const expenseCategoriesIdHelper = new IdHelper("exp_cat");
@@ -15,3 +14,5 @@ export type ExpensesId = InferId<typeof expensesIdHelper>;
 export type ApprovalRulesId = InferId<typeof approvalRulesIdHelper>;
 export type ApprovalStepsId = InferId<typeof approvalStepsIdHelper>;
 export type ExpenseApprovalsId = InferId<typeof expenseApprovalsIdHelper>;
+
+export const zCompanyId = createZodIdSchema(companyIdHelper);

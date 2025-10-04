@@ -8,5 +8,5 @@
   "files.readonlyInclude": {
     "**/routeTree.gen.ts": true
   },
-  "editor.formatOnSaveMode": "modifications"
+  "editor.formatOnSaveMode": "file"
 }
