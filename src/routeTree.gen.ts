@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as ManagerRouteRouteImport } from './routes/manager/route'
+import { Route as EmployeeRouteRouteImport } from './routes/employee/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManagerApprovalsRouteImport } from './routes/manager/approvals'
@@ -43,6 +44,11 @@ const ManagerRouteRoute = ManagerRouteRouteImport.update({
   path: '/manager',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmployeeRouteRoute = EmployeeRouteRouteImport.update({
+  id: '/employee',
+  path: '/employee',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -59,9 +65,9 @@ const ManagerApprovalsRoute = ManagerApprovalsRouteImport.update({
   getParentRoute: () => ManagerRouteRoute,
 } as any)
 const EmployeeExpensesRoute = EmployeeExpensesRouteImport.update({
-  id: '/employee/expenses',
-  path: '/employee/expenses',
-  getParentRoute: () => rootRouteImport,
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => EmployeeRouteRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -122,6 +128,7 @@ const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/employee': typeof EmployeeRouteRouteWithChildren
   '/manager': typeof ManagerRouteRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/employee': typeof EmployeeRouteRouteWithChildren
   '/manager': typeof ManagerRouteRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/employee': typeof EmployeeRouteRouteWithChildren
   '/manager': typeof ManagerRouteRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/employee'
     | '/manager'
     | '/sign-in'
     | '/sign-up'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/employee'
     | '/manager'
     | '/sign-in'
     | '/sign-up'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/employee'
     | '/manager'
     | '/sign-in'
     | '/sign-up'
@@ -246,10 +258,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  EmployeeRouteRoute: typeof EmployeeRouteRouteWithChildren
   ManagerRouteRoute: typeof ManagerRouteRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
-  EmployeeExpensesRoute: typeof EmployeeExpensesRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
@@ -283,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManagerRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/employee': {
+      id: '/employee'
+      path: '/employee'
+      fullPath: '/employee'
+      preLoaderRoute: typeof EmployeeRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -306,10 +325,10 @@ declare module '@tanstack/react-router' {
     }
     '/employee/expenses': {
       id: '/employee/expenses'
-      path: '/employee/expenses'
+      path: '/expenses'
       fullPath: '/employee/expenses'
       preLoaderRoute: typeof EmployeeExpensesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof EmployeeRouteRoute
     }
     '/admin/users': {
       id: '/admin/users'
@@ -407,6 +426,18 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
 )
 
+interface EmployeeRouteRouteChildren {
+  EmployeeExpensesRoute: typeof EmployeeExpensesRoute
+}
+
+const EmployeeRouteRouteChildren: EmployeeRouteRouteChildren = {
+  EmployeeExpensesRoute: EmployeeExpensesRoute,
+}
+
+const EmployeeRouteRouteWithChildren = EmployeeRouteRoute._addFileChildren(
+  EmployeeRouteRouteChildren,
+)
+
 interface ManagerRouteRouteChildren {
   ManagerApprovalsRoute: typeof ManagerApprovalsRoute
 }
@@ -422,10 +453,10 @@ const ManagerRouteRouteWithChildren = ManagerRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
+  EmployeeRouteRoute: EmployeeRouteRouteWithChildren,
   ManagerRouteRoute: ManagerRouteRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
-  EmployeeExpensesRoute: EmployeeExpensesRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,
