@@ -36,8 +36,8 @@ export const Route = createFileRoute("/")({
           throw redirect({ to: "/manager/approvals" });
           break;
         case "employee":
+          throw redirect({ to: "/employee/expenses" });
           break;
-        // throw redirect({ to: "/employee" });
       }
     }
   },
