@@ -48,6 +48,14 @@ export const signUpUser = createServerFn({ method: "POST" })
       .set({ companyId: company.id, role: "admin" })
       .where(eq(users.id, response.user.id));
 
+    // sign in the user
+    await auth.api.signInEmail({
+      body: {
+        email: data.email,
+        password: data.password,
+      },
+    });
+
     return {
       success: true,
     };
