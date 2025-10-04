@@ -33,8 +33,8 @@ export const Route = createFileRoute("/")({
         case "admin":
           throw redirect({ to: "/admin/users" });
         case "manager":
+          throw redirect({ to: "/manager/approvals" });
           break;
-        // throw redirect({ to: "/manager" });
         case "employee":
           break;
         // throw redirect({ to: "/employee" });

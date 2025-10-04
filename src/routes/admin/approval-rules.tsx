@@ -204,7 +204,7 @@ function ApprovalRules() {
         </div>
 
         <Button onClick={handleAdd}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Add Rule
         </Button>
       </section>
@@ -235,7 +235,7 @@ function ApprovalRules() {
             </p>
             <div className="mt-4">
               <Button onClick={handleAdd}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="h-4 w-4" />
                 Create your first rule
               </Button>
             </div>
@@ -268,10 +268,7 @@ function ApprovalRules() {
         onAddStep={addStep}
       />
 
-      <AlertDialog
-        open={!!pendingDelete}
-        onOpenChange={(o) => !o && setPendingDelete(null)}
-      >
+      <AlertDialog open={!!pendingDelete} onOpenChange={(o: any) => !o && setPendingDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this rule?</AlertDialogTitle>
