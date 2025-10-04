@@ -2,9 +2,16 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
 
-export const Route = createFileRoute('/sign-up')({
+export const Route = createFileRoute("/sign-up")({
   component: RouteComponent,
-})
+  head: () => ({
+    meta: [
+      {
+        title: "Sign up",
+      },
+    ],
+  }),
+});
 
 function RouteComponent() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
