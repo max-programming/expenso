@@ -37,7 +37,6 @@ function RouteComponent() {
   const [sendPasswordUserId, setSendPasswordUserId] = useState<string | null>(
     null
   );
-  const [newUserForm, setNewUserForm] = useState<UserFormData>(initialFormData);
   const [editUserForm, setEditUserForm] =
     useState<UserFormData>(initialFormData);
 
@@ -53,38 +52,6 @@ function RouteComponent() {
   const sendPasswordUser = sendPasswordUserId
     ? users.find(u => u.id === sendPasswordUserId) || null
     : null;
-
-  // Add User Handlers
-  const handleAddOpenChange = (open: boolean) => {
-    setIsAddOpen(open);
-    if (!open) {
-      setNewUserForm(initialFormData);
-    }
-  };
-
-  const handleAddUser = () => {
-    const trimmedName = newUserForm.name.trim();
-    const trimmedEmail = newUserForm.email.trim();
-
-    if (!trimmedName || !trimmedEmail) {
-      return;
-    }
-
-    const roleIsEmployee = newUserForm.role === "employee";
-    const managerId = roleIsEmployee ? newUserForm.managerId || null : null;
-
-    // const newUser: User = {
-    //   id: `u-${Date.now()}`,
-    //   name: trimmedName,
-    //   email: trimmedEmail,
-    //   role: newUserForm.role,
-    //   managerId,
-    // };
-
-    // setUsers(prev => [...prev, newUser]);
-    setIsAddOpen(false);
-    setNewUserForm(initialFormData);
-  };
 
   // Edit User Handlers
   const handleEdit = (user: User) => {
@@ -117,36 +84,7 @@ function RouteComponent() {
       return;
     }
 
-    const roleIsEmployee = editUserForm.role === "employee";
-    const managerId = roleIsEmployee ? editUserForm.managerId || null : null;
-
-    // setUsers(prev => {
-    //   const updatedUsers = prev.map(user =>
-    //     user.id === editingUser.id
-    //       ? {
-    //           ...user,
-    //           name: trimmedName,
-    //           email: trimmedEmail,
-    //           role: editUserForm.role,
-    //           managerId,
-    //         }
-    //       : user
-    //   );
-
-    //   // If role changed from manager, clear references
-    //   if (editingUser.role === "manager" && editUserForm.role !== "manager") {
-    //     return updatedUsers.map(user =>
-    //       user.managerId === editingUser.id
-    //         ? {
-    //             ...user,
-    //             managerId: null,
-    //           }
-    //         : user
-    //     );
-    //   }
-
-    //   return updatedUsers;
-    // });
+    // TODO: Implement update user logic with server function
 
     setIsEditOpen(false);
     setEditingUser(null);
@@ -169,19 +107,7 @@ function RouteComponent() {
   const handleConfirmDelete = () => {
     if (!deletingUserId) return;
 
-    // setUsers(prev => {
-    //   // Remove user and clear any references to them as manager
-    //   return prev
-    //     .filter(user => user.id !== deletingUserId)
-    //     .map(user =>
-    //       user.managerId === deletingUserId
-    //         ? {
-    //             ...user,
-    //             managerId: null,
-    //           }
-    //         : user
-    //     );
-    // });
+    // TODO: Implement delete user logic with server function
 
     setIsDeleteOpen(false);
     setDeletingUserId(null);
@@ -237,12 +163,7 @@ function RouteComponent() {
 
           <AddUserDialog
             open={isAddOpen}
-            onOpenChange={handleAddOpenChange}
-            formData={newUserForm}
-            onFormChange={data =>
-              setNewUserForm(prev => ({ ...prev, ...data }))
-            }
-            onSubmit={handleAddUser}
+            onOpenChange={setIsAddOpen}
             availableManagers={availableManagers}
           />
         </div>
