@@ -1,4 +1,11 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  type AnyPgColumn,
+} from "drizzle-orm/pg-core";
+import { companies } from "./companies";
 
 export const users = pgTable("users", {
   id: text().primaryKey(),
@@ -10,6 +17,10 @@ export const users = pgTable("users", {
   banned: boolean().default(false),
   banReason: text(),
   banExpires: timestamp(),
+  companyId: text()
+    .references(() => companies.id, { onDelete: "cascade" })
+    .notNull(),
+  managerId: text().references((): AnyPgColumn => users.id),
   createdAt: timestamp()
     .$defaultFn(() => new Date())
     .notNull(),
