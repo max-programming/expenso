@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Eye, EyeOff, Lock, Mail, User, Globe } from "lucide-react";
 import { getCountriesAndCurrencies } from "../server/get-countries-and-currencies";
 import { Button } from "@/components/ui/button";
@@ -189,22 +189,41 @@ function RouteComponent() {
 function CountriesDropdown() {
   const countriesAndCurrencies = Route.useLoaderData();
 
-  const sortedCountries = countriesAndCurrencies
-    .map(country => country.name.common)
-    .sort((a, b) => a.localeCompare(b));
+  const sortedCountries = useMemo(() => {
+    const uniqueNames = new Set(
+      countriesAndCurrencies
+        .map(country => country.name?.common?.trim())
+        .filter((name): name is string => Boolean(name))
+    );
+
+    return Array.from(uniqueNames).sort((a, b) =>
+      a.localeCompare(b, "en", { sensitivity: "base" })
+    );
+  }, [countriesAndCurrencies]);
+
+  const hasCountries = sortedCountries.length > 0;
 
   return (
-    <Select name="country">
-      <SelectTrigger id="country" className="w-full pl-10">
-        <SelectValue placeholder="Select your country" />
+    <Select name="country" disabled={!hasCountries}>
+      <SelectTrigger
+        id="country"
+        className="w-full pl-10 disabled:cursor-not-allowed disabled:opacity-70"
+      >
+        <SelectValue
+          placeholder={
+            hasCountries ? "Select your country" : "Countries unavailable"
+          }
+        />
       </SelectTrigger>
-      <SelectContent>
-        {sortedCountries.map(country => (
-          <SelectItem key={country} value={country}>
-            {country}
-          </SelectItem>
-        ))}
-      </SelectContent>
+      {hasCountries ? (
+        <SelectContent className="max-h-[300px]" position="popper">
+          {sortedCountries.map(country => (
+            <SelectItem key={country} value={country}>
+              {country}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      ) : null}
     </Select>
   );
 }
