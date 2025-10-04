@@ -143,11 +143,11 @@ export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => actions.onEdit(user)}>
-                <Pencil className="mr-2 h-4 w-4" />
+                <Pencil className="h-4 w-4" />
                 Edit user
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => actions.onSendPassword(user.id)}>
-                <Send className="mr-2 h-4 w-4" />
+                <Send className="h-4 w-4" />
                 Send password
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -166,7 +166,7 @@ export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
                 onClick={() => actions.onDelete(user.id)}
                 className="text-destructive focus:text-destructive"
               >
-                <Trash2 className="mr-2 h-4 w-4" />
+                <Trash2 className="h-4 w-4 text-destructive" />
                 Delete user
               </DropdownMenuItem>
             </DropdownMenuContent>
