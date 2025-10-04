@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "@/lib/db/connection";
 import { approvalRules, approvalSteps } from "@/lib/db/schema/expenses";
-import { authMiddleware } from "../auth-middleware";
+import { adminMiddleware } from "../auth-middleware";
 import { users } from "@/lib/db/schema/auth";
 import { eq } from "drizzle-orm";
 import { zCompanyId, zExpenseCategoriesId, zApprovalRulesId } from "@/lib/id";
@@ -28,7 +28,7 @@ const updateApprovalRuleSchema = z.object({
 
 export const updateApprovalRule = createServerFn({ method: "POST" })
   .inputValidator(updateApprovalRuleSchema)
-  .middleware([authMiddleware])
+  .middleware([adminMiddleware])
   .handler(async ({ data, context }) => {
     const [user] = await db
       .select({
@@ -41,7 +41,7 @@ export const updateApprovalRule = createServerFn({ method: "POST" })
       throw new Error("User or company not found");
     }
 
-    const { success } = zCompanyId.safeParse(user.companyId);
+    const { success, data: companyId } = zCompanyId.safeParse(user.companyId);
     if (!success) {
       throw new Error("Invalid company id");
     }

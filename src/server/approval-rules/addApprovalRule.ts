@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "@/lib/db/connection";
 import { approvalRules, approvalSteps } from "@/lib/db/schema/expenses";
-import { authMiddleware } from "../auth-middleware";
+import { adminMiddleware } from "../auth-middleware";
 import { users } from "@/lib/db/schema/auth";
 import { eq } from "drizzle-orm";
 import { zCompanyId, zExpenseCategoriesId } from "@/lib/id";
@@ -26,9 +26,10 @@ const addApprovalRuleSchema = z.object({
 });
 
 export const addApprovalRule = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
   .inputValidator(addApprovalRuleSchema)
+  .middleware([adminMiddleware])
   .handler(async ({ data, context }) => {
+    console.log({ context });
     const [user] = await db
       .select({
         companyId: users.companyId,

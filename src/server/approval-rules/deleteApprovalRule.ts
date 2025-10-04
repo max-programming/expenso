@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "@/lib/db/connection";
 import { approvalRules } from "@/lib/db/schema/expenses";
-import { authMiddleware } from "../auth-middleware";
+import { adminMiddleware } from "../auth-middleware";
 import { users } from "@/lib/db/schema/auth";
 import { eq } from "drizzle-orm";
 import { zCompanyId, zApprovalRulesId } from "@/lib/id";
@@ -13,7 +13,7 @@ const deleteApprovalRuleSchema = z.object({
 
 export const deleteApprovalRule = createServerFn({ method: "POST" })
   .inputValidator(deleteApprovalRuleSchema)
-  .middleware([authMiddleware])
+  .middleware([adminMiddleware])
   .handler(async ({ data, context }) => {
     const [user] = await db
       .select({

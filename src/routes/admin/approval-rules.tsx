@@ -2,7 +2,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { useMemo, useState } from "react";
-import type { ApprovalRule, RuleType } from "../../components/admin/types";
+import type {
+  ApprovalRule,
+  RuleType,
+  Category,
+  User,
+} from "../../components/admin/types";
+import type { ApprovalRulesId } from "@/lib/id";
 import { RuleCard } from "../../components/admin/RuleCard";
 import { ApprovalRuleForm } from "../../components/admin/ApprovalRuleForm";
 import { Button } from "@/components/ui/button";
@@ -44,13 +50,19 @@ export const Route = createFileRoute("/admin/approval-rules")({
 function ApprovalRules() {
   // const { toast } = useToast()
 
-  const { data: rules = [], isLoading: rulesLoading } = useQuery(
+  const { data: rulesData = [], isLoading: rulesLoading } = useQuery(
     getApprovalRulesQuery
   );
   const { data: managers = [], isLoading: managersLoading } =
     useQuery(getManagersQuery);
   const { data: categories = [], isLoading: categoriesLoading } =
     useQuery(getCategoriesQuery);
+
+  // Transform rules to ensure steps array exists
+  const rules: ApprovalRule[] = rulesData.map((rule) => ({
+    ...rule,
+    steps: rule.steps || [],
+  })) as ApprovalRule[];
   const addRuleMutation = useAddApprovalRule();
   const updateRuleMutation = useUpdateApprovalRule();
   const deleteRuleMutation = useDeleteApprovalRule();
@@ -92,9 +104,7 @@ function ApprovalRules() {
 
     if (editingId) {
       updateRuleMutation.mutate(
-        { ...form, id: editingId } as unknown as Parameters<
-          typeof updateRuleMutation.mutate
-        >[0],
+        { data: { ...form, id: editingId as ApprovalRulesId } as any },
         {
           onSuccess: () => {
             setShowForm(false);
@@ -106,7 +116,7 @@ function ApprovalRules() {
       );
     } else {
       addRuleMutation.mutate(
-        form as unknown as Parameters<typeof addRuleMutation.mutate>[0],
+        { data: form as any },
         {
           onSuccess: () => {
             setShowForm(false);
@@ -126,9 +136,7 @@ function ApprovalRules() {
   const confirmDelete = () => {
     if (!pendingDelete) return;
     deleteRuleMutation.mutate(
-      { id: pendingDelete.id } as unknown as Parameters<
-        typeof deleteRuleMutation.mutate
-      >[0],
+      { data: { id: pendingDelete.id as ApprovalRulesId } },
       {
         onSuccess: () => {
           setPendingDelete(null);
@@ -246,9 +254,9 @@ function ApprovalRules() {
           {filtered.map((rule) => (
             <RuleCard
               key={rule.id}
-              rule={rule as ApprovalRule}
-              users={managers}
-              categories={categories as any}
+              rule={rule}
+              users={managers as User[]}
+              categories={categories as Category[]}
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
@@ -262,13 +270,16 @@ function ApprovalRules() {
         editingId={editingId}
         form={form}
         setForm={setForm}
-        users={managers}
-        categories={categories as any}
+        users={managers as User[]}
+        categories={categories as Category[]}
         onSave={handleSave}
         onAddStep={addStep}
       />
 
-      <AlertDialog open={!!pendingDelete} onOpenChange={(o: any) => !o && setPendingDelete(null)}>
+      <AlertDialog
+        open={!!pendingDelete}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this rule?</AlertDialogTitle>

@@ -75,9 +75,21 @@ export function StepEditor({
           const name =
             users.find((u) => u.id === step.approverId)?.name ||
             "Select approver";
+
+          // Get list of already selected approver IDs (excluding current step)
+          const selectedApproverIds = steps
+            .filter((_, i) => i !== index)
+            .map(s => s.approverId)
+            .filter(Boolean);
+
+          // Filter out already selected approvers
+          const availableUsers = users.filter(
+            u => !selectedApproverIds.includes(u.id) || u.id === step.approverId
+          );
+
           return (
             <div
-              key={index}
+              key={`${step.approverId || 'empty'}-${index}`}
               className="flex items-center gap-2 rounded-md border bg-card p-2"
             >
               {showSequence && (
@@ -96,7 +108,7 @@ export function StepEditor({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Select approver</SelectItem>
-                  {users.map((u) => (
+                  {availableUsers.map((u) => (
                     <SelectItem key={u.id} value={u.id}>
                       {u.name}
                     </SelectItem>
