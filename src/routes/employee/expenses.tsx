@@ -1,101 +1,42 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import {
-  Expense,
-  createExpenseColumns,
-  AddExpenseDialog,
-} from "@/components/expenses";
+import { createExpenseColumns, AddExpenseDialog } from "@/components/expenses";
+import type { ExpenseFormData } from "@/components/expenses/types";
 import { getUsers } from "@/server/users/getUsers";
+import { getCategories } from "@/server/categories/getCategories";
+import { getExpenses } from "@/server/expenses/getExpenses";
+import { useQuery } from "@tanstack/react-query";
+import { getExpensesQuery } from "@/lib/queries/getExpenses";
+import { getCategoriesQuery } from "@/lib/queries/getCategories";
+import { useState } from "react";
 
 export const Route = createFileRoute("/employee/expenses")({
   component: RouteComponent,
-  loader: () => getUsers(),
+  loader: async () => {
+    const [users, categories, expenses] = await Promise.all([
+      getUsers(),
+      getCategories(),
+      getExpenses(),
+    ]);
+    return { users, categories, expenses };
+  },
 });
 
-const initialExpenses: Expense[] = [
-  {
-    id: "exp-001",
-    companyId: "comp-001",
-    employeeId: "emp-001",
-    description: "Team Lunch Meeting",
-    categoryId: "exp_cat-001" as any, // Meals
-    amount: 2500,
-    currencyCode: "INR",
-    expenseDate: new Date("2024-01-15"),
-    status: "pending",
-    submittedAt: new Date("2024-01-15T10:00:00"),
-    createdAt: new Date("2024-01-15T09:00:00"),
-    updatedAt: new Date("2024-01-15T10:00:00"),
-  },
-  {
-    id: "exp-002",
-    companyId: "comp-001",
-    employeeId: "emp-001",
-    description: "Office Supplies - Notebooks",
-    categoryId: "exp_cat-003" as any, // Office Supplies
-    amount: 450,
-    currencyCode: "INR",
-    expenseDate: new Date("2024-01-14"),
-    status: "approved",
-    submittedAt: new Date("2024-01-14T14:30:00"),
-    createdAt: new Date("2024-01-14T13:00:00"),
-    updatedAt: new Date("2024-01-14T14:30:00"),
-  },
-  {
-    id: "exp-003",
-    companyId: "comp-001",
-    employeeId: "emp-001",
-    description: "Taxi to Client Meeting",
-    categoryId: "exp_cat-002" as any, // Travel
-    amount: 1200,
-    currencyCode: "INR",
-    expenseDate: new Date("2024-01-13"),
-    status: "pending",
-    submittedAt: new Date("2024-01-13T09:15:00"),
-    createdAt: new Date("2024-01-13T08:00:00"),
-    updatedAt: new Date("2024-01-13T09:15:00"),
-  },
-  {
-    id: "exp-004",
-    companyId: "comp-001",
-    employeeId: "emp-001",
-    description: "Hotel Stay - Conference",
-    categoryId: "exp_cat-002" as any, // Travel
-    amount: 8500,
-    currencyCode: "INR",
-    expenseDate: new Date("2024-01-12"),
-    status: "rejected",
-    submittedAt: new Date("2024-01-12T16:45:00"),
-    createdAt: new Date("2024-01-12T15:00:00"),
-    updatedAt: new Date("2024-01-12T16:45:00"),
-  },
-  {
-    id: "exp-005",
-    companyId: "comp-001",
-    employeeId: "emp-001",
-    description: "Coffee with Team",
-    categoryId: "exp_cat-001" as any, // Meals
-    amount: 300,
-    currencyCode: "INR",
-    expenseDate: new Date("2024-01-11"),
-    status: "approved",
-    submittedAt: new Date("2024-01-11T11:20:00"),
-    createdAt: new Date("2024-01-11T10:00:00"),
-    updatedAt: new Date("2024-01-11T11:20:00"),
-  },
-];
-
 function RouteComponent() {
-  const users = Route.useLoaderData();
-  const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
+  const initialData = Route.useLoaderData();
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
+
+  // Use react-query to manage expenses data with proper cache invalidation
+  const { data: expenses = initialData.expenses } = useQuery(getExpensesQuery);
+  const { data: categories = initialData.categories } =
+    useQuery(getCategoriesQuery);
 
   const handleAddExpense = (
     newExpense: Omit<
-      Expense,
+      ExpenseFormData,
       | "id"
       | "submittedAt"
       | "companyId"
@@ -104,16 +45,9 @@ function RouteComponent() {
       | "updatedAt"
     >
   ) => {
-    const expense: Expense = {
-      ...newExpense,
-      id: `exp-${Date.now()}`,
-      submittedAt: new Date(),
-      companyId: "comp-001", // Mock company ID
-      employeeId: "emp-001", // Mock employee ID
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setExpenses((prev) => [...prev, expense]);
+    // TODO: Implement server-side expense creation
+    // For now, this will be handled via mutations
+    console.log("Adding expense:", newExpense);
   };
 
   // Table Columns
@@ -158,10 +92,11 @@ function RouteComponent() {
         open={isAddExpenseOpen}
         onOpenChange={setIsAddExpenseOpen}
         onAddExpense={handleAddExpense}
-        users={users.map((user: any) => ({
+        users={initialData.users.map((user: any) => ({
           ...user,
           role: user.role ?? "",
         }))}
+        categories={categories}
       />
     </div>
   );

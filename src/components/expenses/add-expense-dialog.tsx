@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,8 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Camera, Upload, Scan } from "lucide-react";
-import type { Expense } from "./types";
+import type { ExpenseFormData } from "./types";
 import type { ExpenseCategoriesId as ExpenseCatId } from "@/lib/id";
 
 interface User {
@@ -27,12 +26,18 @@ interface User {
   role: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
 interface AddExpenseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAddExpense: (
     expense: Omit<
-      Expense,
+      ExpenseFormData,
       | "id"
       | "submittedAt"
       | "companyId"
@@ -42,6 +47,7 @@ interface AddExpenseDialogProps {
     >
   ) => void;
   users: User[];
+  categories: Category[];
 }
 
 export function AddExpenseDialog({
@@ -49,6 +55,7 @@ export function AddExpenseDialog({
   onOpenChange,
   onAddExpense,
   users,
+  categories,
 }: AddExpenseDialogProps) {
   const [form, setForm] = useState({
     categoryId: "",
@@ -59,38 +66,6 @@ export function AddExpenseDialog({
     paidBy: "",
     remarks: "",
   });
-  const [isProcessingOCR, setIsProcessingOCR] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleOCRUpload = async (file: File) => {
-    setIsProcessingOCR(true);
-
-    // Mock OCR processing - in real app, send to OCR service
-    setTimeout(() => {
-      // Mock OCR results
-      const mockOCRData = {
-        amount: "1250.50",
-        description: "Restaurant Dinner - Italian Cuisine",
-        expenseDate: new Date().toISOString().split("T")[0],
-        currencyCode: "INR",
-        categoryId: "exp_cat-001", // Meals
-      };
-
-      setForm(prev => ({
-        ...prev,
-        ...mockOCRData,
-      }));
-
-      setIsProcessingOCR(false);
-    }, 2000);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleOCRUpload(file);
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,7 +80,7 @@ export function AddExpenseDialog({
     }
 
     const newExpense: Omit<
-      Expense,
+      ExpenseFormData,
       | "id"
       | "submittedAt"
       | "companyId"
@@ -172,10 +147,11 @@ export function AddExpenseDialog({
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="exp_cat-001">Meals</SelectItem>
-                <SelectItem value="exp_cat-002">Travel</SelectItem>
-                <SelectItem value="exp_cat-003">Office Supplies</SelectItem>
-                <SelectItem value="exp_cat-004">Other</SelectItem>
+                {categories.map(category => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

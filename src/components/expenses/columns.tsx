@@ -15,14 +15,16 @@ export const createExpenseColumns = (): ColumnDef<Expense>[] => [
     accessorKey: "categoryId",
     header: "Category",
     cell: ({ row }) => (
-      <Badge variant="outline">{row.getValue("categoryId") || "Uncategorized"}</Badge>
+      <Badge variant="outline">
+        {row.getValue("categoryId") || "Uncategorized"}
+      </Badge>
     ),
   },
   {
     accessorKey: "amount",
     header: "Amount",
     cell: ({ row }) => {
-      const amount = row.getValue("amount") as number;
+      const amount = parseFloat(row.getValue("amount") as string);
       const currencyCode = row.original.currencyCode;
       return (
         <div className="font-medium">
@@ -35,7 +37,7 @@ export const createExpenseColumns = (): ColumnDef<Expense>[] => [
     accessorKey: "expenseDate",
     header: "Date",
     cell: ({ row }) => {
-      const date = row.getValue("expenseDate") as Date;
+      const date = row.getValue("expenseDate") as string | Date;
       return <div>{dayjs(date).format("MMM DD, YYYY")}</div>;
     },
   },
@@ -65,7 +67,7 @@ export const createExpenseColumns = (): ColumnDef<Expense>[] => [
     accessorKey: "submittedAt",
     header: "Submitted",
     cell: ({ row }) => {
-      const submittedAt = row.getValue("submittedAt") as Date;
+      const submittedAt = row.getValue("submittedAt") as Date | null;
       return submittedAt ? (
         <div className="text-sm text-muted-foreground">
           {dayjs(submittedAt).format("MMM DD, HH:mm")}
