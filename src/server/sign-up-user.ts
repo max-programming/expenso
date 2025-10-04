@@ -3,7 +3,7 @@ import { db } from "@/lib/db/connection";
 import { companies } from "@/lib/db/schema/companies";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getCountriesAndCurrencies } from "./get-countries-and-currencies";
+import { getCurrencyByCountryName } from "./get-countries-and-currencies";
 import { users } from "@/lib/db/schema/auth";
 import { eq } from "drizzle-orm";
 
@@ -17,13 +17,11 @@ export const signUpUser = createServerFn({ method: "POST" })
     })
   )
   .handler(async ({ data }) => {
-    const countriesAndCurrencies = await getCountriesAndCurrencies();
+    const country = await getCurrencyByCountryName({
+      data: { name: data.country },
+    });
 
-    const currency = Object.keys(
-      countriesAndCurrencies.find(
-        country => country.name.common === data.country
-      )?.currencies ?? {}
-    )[0];
+    const currency = Object.keys(country.currencies ?? {})[0];
 
     if (!currency) {
       throw new Error("Could not find currency for country");
