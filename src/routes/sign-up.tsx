@@ -29,15 +29,17 @@ import {
 } from "@/components/ui/select";
 import z from "zod";
 import { signUpUser } from "@/server/sign-up-user";
+import { useMutation } from "@tanstack/react-query";
+import { Spinner } from "@/components/ui/spinner";
 
 export const Route = createFileRoute("/sign-up")({
   component: RouteComponent,
+  loader: () => getCountryNames(),
   beforeLoad: ({ context }) => {
     if (context.session) {
       throw redirect({ to: "/" });
     }
   },
-  loader: () => getCountryNames(),
   head: () => ({
     meta: [
       {
@@ -62,6 +64,9 @@ const signUpForm = z.object({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const signUpMutation = useMutation({
+    mutationFn: signUpUser,
+  });
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpForm),
     defaultValues: {
@@ -84,7 +89,7 @@ function RouteComponent() {
     }
 
     try {
-      const response = await signUpUser({
+      const response = await signUpMutation.mutateAsync({
         data: {
           name: data.name,
           email: data.email,
@@ -225,8 +230,19 @@ function RouteComponent() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" size="lg">
-                Sign up
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                disabled={signUpMutation.isPending}
+              >
+                {signUpMutation.isPending ? (
+                  <>
+                    <Spinner /> Signing up...
+                  </>
+                ) : (
+                  "Sign up"
+                )}
               </Button>
               {form.formState.errors && (
                 <div className="text-red-500">
