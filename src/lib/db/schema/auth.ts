@@ -6,6 +6,7 @@ import {
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { companies } from "./companies";
+import { CompanyId } from "@/lib/id";
 
 export const users = pgTable("users", {
   id: text().primaryKey(),
@@ -17,7 +18,9 @@ export const users = pgTable("users", {
   banned: boolean().default(false),
   banReason: text(),
   banExpires: timestamp(),
-  companyId: text().references(() => companies.id, { onDelete: "cascade" }),
+  companyId: text()
+    .references(() => companies.id, { onDelete: "cascade" })
+    .$type<CompanyId>(),
   managerId: text().references((): AnyPgColumn => users.id),
   createdAt: timestamp()
     .$defaultFn(() => new Date())

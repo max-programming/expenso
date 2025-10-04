@@ -27,7 +27,10 @@ type ColumnActions = {
   availableManagers: User[];
 };
 
-export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
+export function createColumns(
+  actions: ColumnActions,
+  currentUserId: string
+): ColumnDef<User>[] {
   return [
     {
       id: "select",
@@ -90,6 +93,8 @@ export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
       header: "Role",
       cell: ({ row }) => {
         const user = row.original;
+        if (!user.role) return null;
+
         const roleColors = {
           admin: "destructive",
           manager: "default",
@@ -97,7 +102,7 @@ export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
         } as const;
 
         return (
-          <Badge variant={roleColors[user.role]}>
+          <Badge variant={roleColors[user.role as keyof typeof roleColors]}>
             {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
           </Badge>
         );
@@ -132,6 +137,8 @@ export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
       cell: ({ row }) => {
         const user = row.original;
 
+        const isSelf = user.id === currentUserId;
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -142,15 +149,21 @@ export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => actions.onEdit(user)}>
-                <Pencil className="h-4 w-4" />
-                Edit user
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => actions.onSendPassword(user.id)}>
-                <Send className="h-4 w-4" />
-                Send password
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              {!isSelf && (
+                <>
+                  <DropdownMenuItem onClick={() => actions.onEdit(user)}>
+                    <Pencil className="h-4 w-4" />
+                    Edit user
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => actions.onSendPassword(user.id)}
+                  >
+                    <Send className="h-4 w-4" />
+                    Send password
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(user.id)}
               >
@@ -161,14 +174,18 @@ export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
               >
                 Copy email
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => actions.onDelete(user.id)}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="h-4 w-4 text-destructive" />
-                Delete user
-              </DropdownMenuItem>
+              {!isSelf && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => actions.onDelete(user.id)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                    Delete user
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -176,4 +193,3 @@ export function createColumns(actions: ColumnActions): ColumnDef<User>[] {
     },
   ];
 }
-

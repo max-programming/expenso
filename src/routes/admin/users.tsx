@@ -11,41 +11,12 @@ import {
   DeleteUserDialog,
   SendPasswordDialog,
 } from "@/components/users";
+import { getUsers } from "@/server/users/getUsers";
 
 export const Route = createFileRoute("/admin/users")({
   component: RouteComponent,
+  loader: () => getUsers(),
 });
-
-const initialUsers: User[] = [
-  {
-    id: "u-101",
-    name: "Olivia Rhye",
-    email: "olivia.rhye@example.com",
-    role: "admin",
-    managerId: null,
-  },
-  {
-    id: "u-102",
-    name: "Phoenix Baker",
-    email: "phoenix.baker@example.com",
-    role: "manager",
-    managerId: null,
-  },
-  {
-    id: "u-103",
-    name: "Lana Steiner",
-    email: "lana.steiner@example.com",
-    role: "employee",
-    managerId: "u-102",
-  },
-  {
-    id: "u-104",
-    name: "Demi Wilkinson",
-    email: "demi.wilkinson@example.com",
-    role: "employee",
-    managerId: "u-102",
-  },
-];
 
 const initialFormData: UserFormData = {
   name: "",
@@ -55,7 +26,8 @@ const initialFormData: UserFormData = {
 };
 
 function RouteComponent() {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const users = Route.useLoaderData();
+  const context = Route.useRouteContext();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -101,15 +73,15 @@ function RouteComponent() {
     const roleIsEmployee = newUserForm.role === "employee";
     const managerId = roleIsEmployee ? newUserForm.managerId || null : null;
 
-    const newUser: User = {
-      id: `u-${Date.now()}`,
-      name: trimmedName,
-      email: trimmedEmail,
-      role: newUserForm.role,
-      managerId,
-    };
+    // const newUser: User = {
+    //   id: `u-${Date.now()}`,
+    //   name: trimmedName,
+    //   email: trimmedEmail,
+    //   role: newUserForm.role,
+    //   managerId,
+    // };
 
-    setUsers(prev => [...prev, newUser]);
+    // setUsers(prev => [...prev, newUser]);
     setIsAddOpen(false);
     setNewUserForm(initialFormData);
   };
@@ -120,6 +92,7 @@ function RouteComponent() {
     setEditUserForm({
       name: user.name,
       email: user.email,
+      // @ts-ignore
       role: user.role,
       managerId: user.managerId || "",
     });
@@ -147,33 +120,33 @@ function RouteComponent() {
     const roleIsEmployee = editUserForm.role === "employee";
     const managerId = roleIsEmployee ? editUserForm.managerId || null : null;
 
-    setUsers(prev => {
-      const updatedUsers = prev.map(user =>
-        user.id === editingUser.id
-          ? {
-              ...user,
-              name: trimmedName,
-              email: trimmedEmail,
-              role: editUserForm.role,
-              managerId,
-            }
-          : user
-      );
+    // setUsers(prev => {
+    //   const updatedUsers = prev.map(user =>
+    //     user.id === editingUser.id
+    //       ? {
+    //           ...user,
+    //           name: trimmedName,
+    //           email: trimmedEmail,
+    //           role: editUserForm.role,
+    //           managerId,
+    //         }
+    //       : user
+    //   );
 
-      // If role changed from manager, clear references
-      if (editingUser.role === "manager" && editUserForm.role !== "manager") {
-        return updatedUsers.map(user =>
-          user.managerId === editingUser.id
-            ? {
-                ...user,
-                managerId: null,
-              }
-            : user
-        );
-      }
+    //   // If role changed from manager, clear references
+    //   if (editingUser.role === "manager" && editUserForm.role !== "manager") {
+    //     return updatedUsers.map(user =>
+    //       user.managerId === editingUser.id
+    //         ? {
+    //             ...user,
+    //             managerId: null,
+    //           }
+    //         : user
+    //     );
+    //   }
 
-      return updatedUsers;
-    });
+    //   return updatedUsers;
+    // });
 
     setIsEditOpen(false);
     setEditingUser(null);
@@ -196,19 +169,19 @@ function RouteComponent() {
   const handleConfirmDelete = () => {
     if (!deletingUserId) return;
 
-    setUsers(prev => {
-      // Remove user and clear any references to them as manager
-      return prev
-        .filter(user => user.id !== deletingUserId)
-        .map(user =>
-          user.managerId === deletingUserId
-            ? {
-                ...user,
-                managerId: null,
-              }
-            : user
-        );
-    });
+    // setUsers(prev => {
+    //   // Remove user and clear any references to them as manager
+    //   return prev
+    //     .filter(user => user.id !== deletingUserId)
+    //     .map(user =>
+    //       user.managerId === deletingUserId
+    //         ? {
+    //             ...user,
+    //             managerId: null,
+    //           }
+    //         : user
+    //     );
+    // });
 
     setIsDeleteOpen(false);
     setDeletingUserId(null);
@@ -236,12 +209,15 @@ function RouteComponent() {
   // Table Columns
   const columns = useMemo(
     () =>
-      createColumns({
-        onEdit: handleEdit,
-        onDelete: handleDelete,
-        onSendPassword: handleSendPassword,
-        availableManagers,
-      }),
+      createColumns(
+        {
+          onEdit: handleEdit,
+          onDelete: handleDelete,
+          onSendPassword: handleSendPassword,
+          availableManagers,
+        },
+        context.session!.user.id
+      ),
     [availableManagers]
   );
 

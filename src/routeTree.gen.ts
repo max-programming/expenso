@@ -13,6 +13,7 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ManagerApprovalsRouteImport } from './routes/manager/approvals'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminApprovalRulesRouteImport } from './routes/admin/approval-rules'
@@ -43,6 +44,11 @@ const AdminRouteRoute = AdminRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManagerApprovalsRoute = ManagerApprovalsRouteImport.update({
+  id: '/manager/approvals',
+  path: '/manager/approvals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
+  '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
+  '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
+  '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
+    | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
+    | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
+    | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -212,6 +224,7 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  ManagerApprovalsRoute: typeof ManagerApprovalsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manager/approvals': {
+      id: '/manager/approvals'
+      path: '/manager/approvals'
+      fullPath: '/manager/approvals'
+      preLoaderRoute: typeof ManagerApprovalsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
@@ -353,6 +373,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  ManagerApprovalsRoute: ManagerApprovalsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,
