@@ -15,17 +15,19 @@ export interface Country {
   name: {
     common: string;
     official: string;
-    nativeName: {
-      [key: string]: {
+    nativeName: Record<
+      string,
+      {
         official: string;
         common: string;
-      };
-    };
+      }
+    >;
   };
-  currencies: {
-    [key: string]: {
+  currencies: Record<
+    string,
+    {
       name: string;
       symbol: string;
-    };
-  };
+    }
+  >;
 }
