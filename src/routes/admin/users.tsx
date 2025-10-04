@@ -4,12 +4,13 @@ import { useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import {
   User,
-  UserFormData,
   createColumns,
   AddUserDialog,
-  EditUserDialog,
-  DeleteUserDialog,
+  // EditUserDialog,
+  // DeleteUserDialog,
   SendPasswordDialog,
+  DeleteUserDialog,
+  EditUserDialog,
 } from "@/components/users";
 import { getUsers } from "@/server/users/getUsers";
 
@@ -18,13 +19,6 @@ export const Route = createFileRoute("/admin/users")({
   loader: () => getUsers(),
 });
 
-const initialFormData: UserFormData = {
-  name: "",
-  email: "",
-  role: "employee",
-  managerId: "",
-};
-
 function RouteComponent() {
   const users = Route.useLoaderData();
   const context = Route.useRouteContext();
@@ -32,18 +26,21 @@ function RouteComponent() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isSendPasswordOpen, setIsSendPasswordOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [sendPasswordUserId, setSendPasswordUserId] = useState<string | null>(
     null
   );
-  const [editUserForm, setEditUserForm] =
-    useState<UserFormData>(initialFormData);
 
   const availableManagers = useMemo(
     () => users.filter(user => user.role === "manager"),
     [users]
   );
+
+  // Derive user objects from IDs to ensure we always have fresh data
+  const editingUser = editingUserId
+    ? users.find(u => u.id === editingUserId) || null
+    : null;
 
   const deletingUser = deletingUserId
     ? users.find(u => u.id === deletingUserId) || null
@@ -55,62 +52,14 @@ function RouteComponent() {
 
   // Edit User Handlers
   const handleEdit = (user: User) => {
-    setEditingUser(user);
-    setEditUserForm({
-      name: user.name,
-      email: user.email,
-      // @ts-ignore
-      role: user.role,
-      managerId: user.managerId || "",
-    });
+    setEditingUserId(user.id);
     setIsEditOpen(true);
-  };
-
-  const handleEditOpenChange = (open: boolean) => {
-    setIsEditOpen(open);
-    if (!open) {
-      setEditingUser(null);
-      setEditUserForm(initialFormData);
-    }
-  };
-
-  const handleUpdateUser = () => {
-    if (!editingUser) return;
-
-    const trimmedName = editUserForm.name.trim();
-    const trimmedEmail = editUserForm.email.trim();
-
-    if (!trimmedName || !trimmedEmail) {
-      return;
-    }
-
-    // TODO: Implement update user logic with server function
-
-    setIsEditOpen(false);
-    setEditingUser(null);
-    setEditUserForm(initialFormData);
   };
 
   // Delete User Handlers
   const handleDelete = (userId: string) => {
     setDeletingUserId(userId);
     setIsDeleteOpen(true);
-  };
-
-  const handleDeleteOpenChange = (open: boolean) => {
-    setIsDeleteOpen(open);
-    if (!open) {
-      setDeletingUserId(null);
-    }
-  };
-
-  const handleConfirmDelete = () => {
-    if (!deletingUserId) return;
-
-    // TODO: Implement delete user logic with server function
-
-    setIsDeleteOpen(false);
-    setDeletingUserId(null);
   };
 
   // Send Password Handlers
@@ -176,21 +125,32 @@ function RouteComponent() {
         />
       </div>
 
-      <EditUserDialog
-        open={isEditOpen}
-        onOpenChange={handleEditOpenChange}
-        formData={editUserForm}
-        onFormChange={data => setEditUserForm(prev => ({ ...prev, ...data }))}
-        onSubmit={handleUpdateUser}
-        availableManagers={availableManagers}
-      />
+      {editingUser && (
+        <EditUserDialog
+          user={editingUser}
+          open={isEditOpen}
+          onOpenChange={open => {
+            setIsEditOpen(open);
+            if (!open) {
+              setEditingUserId(null);
+            }
+          }}
+          availableManagers={availableManagers}
+        />
+      )}
 
-      <DeleteUserDialog
-        open={isDeleteOpen}
-        onOpenChange={handleDeleteOpenChange}
-        user={deletingUser}
-        onConfirm={handleConfirmDelete}
-      />
+      {deletingUser && (
+        <DeleteUserDialog
+          user={deletingUser}
+          open={isDeleteOpen}
+          onOpenChange={open => {
+            setIsDeleteOpen(open);
+            if (!open) {
+              setDeletingUserId(null);
+            }
+          }}
+        />
+      )}
 
       <SendPasswordDialog
         open={isSendPasswordOpen}
