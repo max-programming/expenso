@@ -121,6 +121,10 @@ export const approvalRules = pgTable("approval_rules", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
 
+  specificCategoryId: text("specific_category_id")
+    .$type<ExpenseCategoriesId>()
+    .references(() => expenseCategories.id, { onDelete: "cascade" }), // If null, applies to all categories
+
   // Rule configuration
   ruleType: approvalRuleTypeEnum("rule_type").notNull(),
   isManagerFirst: boolean("is_manager_first").default(true).notNull(),
