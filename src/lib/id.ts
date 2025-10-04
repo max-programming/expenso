@@ -20,3 +20,5 @@ export const zExpenseCategoriesId = createZodIdSchema(
   expenseCategoriesIdHelper
 );
 export const zApprovalRulesId = createZodIdSchema(approvalRulesIdHelper);
+export const zExpenseApprovalsId = createZodIdSchema(expenseApprovalsIdHelper);
+export const zExpensesId = createZodIdSchema(expensesIdHelper);
