@@ -1,7 +1,7 @@
 import { type CompanyId, companyIdHelper } from "@/lib/id";
 import { pgTable } from "drizzle-orm/pg-core";
 
-export const companies = pgTable("companies", t => ({
+export const companies = pgTable("companies", (t) => ({
   id: t
     .text()
     .primaryKey()

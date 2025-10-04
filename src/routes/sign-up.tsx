@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Eye, EyeOff, Lock, Mail, User, Globe } from 'lucide-react'
 import { getCountriesAndCurrencies } from '../server/get-countries-and-currencies'
 
-export const Route = createFileRoute('/sign-up')({
+export const Route = createFileRoute("/sign-up")({
   component: RouteComponent,
   loader: async () => {
     const countriesAndCurrencies = await getCountriesAndCurrencies()
