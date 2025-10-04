@@ -1,4 +1,9 @@
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  Link,
+  createFileRoute,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Eye, EyeOff, Lock, Mail, User, Globe } from "lucide-react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
@@ -27,6 +32,12 @@ import { signUpUser } from "@/server/sign-up-user";
 
 export const Route = createFileRoute("/sign-up")({
   component: RouteComponent,
+  beforeLoad: ({ context }) => {
+    if (context.session) {
+      throw redirect({ to: "/" });
+    }
+  },
+  loader: () => getCountryNames(),
   head: () => ({
     meta: [
       {
@@ -34,7 +45,6 @@ export const Route = createFileRoute("/sign-up")({
       },
     ],
   }),
-  loader: () => getCountryNames(),
 });
 
 type SignUpForm = z.infer<typeof signUpForm>;
@@ -264,8 +274,11 @@ function CountriesDropdown() {
   const hasCountries = sortedCountries.length > 0;
 
   return (
-    <Select       {...form.register("country")}
-      onValueChange={value => form.setValue("country", value)} disabled={!hasCountries}>
+    <Select
+      {...form.register("country")}
+      onValueChange={value => form.setValue("country", value)}
+      disabled={!hasCountries}
+    >
       <SelectTrigger
         id="country"
         className="w-full pl-10 disabled:cursor-not-allowed disabled:opacity-70"

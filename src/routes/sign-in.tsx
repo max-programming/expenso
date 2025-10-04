@@ -1,6 +1,11 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import {
+  Link,
+  createFileRoute,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
+import { useState } from "react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,9 +17,18 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { z } from "zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInUser } from "@/server/sign-in-user";
 
 export const Route = createFileRoute("/sign-in")({
   component: RouteComponent,
+  beforeLoad: ({ context }) => {
+    if (context.session) {
+      throw redirect({ to: "/" });
+    }
+  },
   head: () => ({
     meta: [
       {
@@ -24,8 +38,41 @@ export const Route = createFileRoute("/sign-in")({
   }),
 });
 
+type SignInForm = z.infer<typeof signInForm>;
+const signInForm = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
 function RouteComponent() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const navigate = useNavigate();
+  const form = useForm<SignInForm>({
+    resolver: zodResolver(signInForm),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(data: SignInForm) {
+    try {
+      const response = await signInUser({
+        data: {
+          email: data.email,
+          password: data.password,
+        },
+      });
+
+      if (response.success) {
+        navigate({ to: "/" });
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        form.setError("root", { message: err.message });
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-16">
@@ -39,64 +86,69 @@ function RouteComponent() {
         </CardHeader>
 
         <CardContent>
-          <form
-            className="space-y-6"
-            onSubmit={event => {
-              event.preventDefault();
-            }}
-          >
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
-                  <Mail className="w-4 h-4" aria-hidden="true" />
-                </span>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@email.com"
-                  autoComplete="email"
-                  className="pl-10"
-                />
+          <FormProvider {...form}>
+            <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                    <Mail className="w-4 h-4" aria-hidden="true" />
+                  </span>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@email.com"
+                    autoComplete="email"
+                    className="pl-10"
+                    {...form.register("email")}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
-                  <Lock className="w-4 h-4" aria-hidden="true" />
-                </span>
-                <Input
-                  id="password"
-                  name="password"
-                  type={isPasswordVisible ? "text" : "password"}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                  className="pl-10 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setIsPasswordVisible(prev => !prev)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={
-                    isPasswordVisible ? "Hide password" : "Show password"
-                  }
-                >
-                  {isPasswordVisible ? (
-                    <EyeOff className="w-4 h-4" aria-hidden="true" />
-                  ) : (
-                    <Eye className="w-4 h-4" aria-hidden="true" />
-                  )}
-                </button>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                    <Lock className="w-4 h-4" aria-hidden="true" />
+                  </span>
+                  <Input
+                    id="password"
+                    type={isPasswordVisible ? "text" : "password"}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    className="pl-10 pr-10"
+                    {...form.register("password")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsPasswordVisible(prev => !prev)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={
+                      isPasswordVisible ? "Hide password" : "Show password"
+                    }
+                  >
+                    {isPasswordVisible ? (
+                      <EyeOff className="w-4 h-4" aria-hidden="true" />
+                    ) : (
+                      <Eye className="w-4 h-4" aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <Button type="submit" className="w-full" size="lg">
-              Sign in
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" size="lg">
+                Sign in
+              </Button>
+
+              {form.formState.errors && (
+                <div className="text-red-500">
+                  {Object.entries(form.formState.errors).map(([key, error]) => (
+                    <p key={key}>{error.message}</p>
+                  ))}
+                </div>
+              )}
+            </form>
+          </FormProvider>
         </CardContent>
 
         <CardFooter className="flex-col gap-2">

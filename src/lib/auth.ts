@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { reactStartCookies } from "better-auth/react-start";
+import { reactStartCookies } from "@/lib/react-start";
 import { admin } from "better-auth/plugins";
 import { db } from "./db/connection";
 import * as authSchema from "./db/schema/auth";

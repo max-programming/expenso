@@ -12,12 +12,14 @@ export const signInUser = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { email, password } = data;
 
-    const response = await auth.api.signInEmail({
+    await auth.api.signInEmail({
       body: {
         email,
         password,
       },
     });
 
-    return response;
+    return {
+      success: true,
+    };
   });
