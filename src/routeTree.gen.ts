@@ -15,6 +15,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminApprovalRulesRouteImport } from './routes/admin/approval-rules'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
@@ -52,6 +53,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminApprovalRulesRoute = AdminApprovalRulesRouteImport.update({
+  id: '/approval-rules',
+  path: '/approval-rules',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const DemoStartServerFuncsRoute = DemoStartServerFuncsRouteImport.update({
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/sign-in'
     | '/sign-up'
+    | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
     | '/api/auth/$'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/sign-in'
     | '/sign-up'
+    | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
     | '/api/auth/$'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/sign-in'
     | '/sign-up'
+    | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
     | '/api/auth/$'
@@ -254,6 +266,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/approval-rules': {
+      id: '/admin/approval-rules'
+      path: '/approval-rules'
+      fullPath: '/admin/approval-rules'
+      preLoaderRoute: typeof AdminApprovalRulesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/demo/start/server-funcs': {
       id: '/demo/start/server-funcs'
       path: '/demo/start/server-funcs'
@@ -314,11 +333,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteRouteChildren {
+  AdminApprovalRulesRoute: typeof AdminApprovalRulesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminUsersRoute: typeof AdminUsersRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminApprovalRulesRoute: AdminApprovalRulesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminUsersRoute: AdminUsersRoute,
 }
