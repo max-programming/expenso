@@ -76,7 +76,7 @@ export function AddExpenseDialog({
         categoryId: "exp_cat-001", // Meals
       };
 
-      setForm((prev) => ({
+      setForm(prev => ({
         ...prev,
         ...mockOCRData,
       }));
@@ -145,56 +145,14 @@ export function AddExpenseDialog({
           <DialogTitle>Add New Expense</DialogTitle>
         </DialogHeader>
 
-        {/* OCR Section */}
-        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-          <div className="space-y-2">
-            <Scan className="mx-auto h-8 w-8 text-muted-foreground" />
-            <div>
-              <p className="text-sm font-medium">Scan Receipt with OCR</p>
-              <p className="text-xs text-muted-foreground">
-                Upload a photo of your receipt to auto-fill expense details
-              </p>
-            </div>
-            <div className="flex gap-2 justify-center">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isProcessingOCR}
-              >
-                <Camera className="mr-2 h-4 w-4" />
-                {isProcessingOCR ? "Processing..." : "Take Photo"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isProcessingOCR}
-              >
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Image
-              </Button>
-            </div>
-          </div>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="description">Description *</Label>
             <Textarea
               id="description"
               value={form.description}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, description: e.target.value }))
+              onChange={e =>
+                setForm(prev => ({ ...prev, description: e.target.value }))
               }
               placeholder="Describe the expense..."
               required
@@ -205,8 +163,8 @@ export function AddExpenseDialog({
             <Label htmlFor="category">Category *</Label>
             <Select
               value={form.categoryId}
-              onValueChange={(value) =>
-                setForm((prev) => ({ ...prev, categoryId: value }))
+              onValueChange={value =>
+                setForm(prev => ({ ...prev, categoryId: value }))
               }
               required
             >
@@ -222,82 +180,82 @@ export function AddExpenseDialog({
             </Select>
           </div>
 
-            <div>
-              <Label htmlFor="amount">Amount *</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                value={form.amount}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, amount: e.target.value }))
-                }
-                placeholder="0.00"
-                required
-              />
-            </div>
+          <div>
+            <Label htmlFor="amount">Amount *</Label>
+            <Input
+              id="amount"
+              type="number"
+              step="0.01"
+              min="0"
+              value={form.amount}
+              onChange={e =>
+                setForm(prev => ({ ...prev, amount: e.target.value }))
+              }
+              placeholder="0.00"
+              required
+            />
+          </div>
 
-            <div>
-              <Label htmlFor="currencyCode">Currency</Label>
-              <Select
-                value={form.currencyCode}
-                onValueChange={(value) =>
-                  setForm((prev) => ({ ...prev, currencyCode: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="INR">INR</SelectItem>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label htmlFor="currencyCode">Currency</Label>
+            <Select
+              value={form.currencyCode}
+              onValueChange={value =>
+                setForm(prev => ({ ...prev, currencyCode: value }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="INR">INR</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="EUR">EUR</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-            <div>
-              <Label htmlFor="expenseDate">Expense Date *</Label>
-              <Input
-                id="expenseDate"
-                type="date"
-                value={form.expenseDate}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, expenseDate: e.target.value }))
-                }
-                required
-              />
-            </div>
+          <div>
+            <Label htmlFor="expenseDate">Expense Date *</Label>
+            <Input
+              id="expenseDate"
+              type="date"
+              value={form.expenseDate}
+              onChange={e =>
+                setForm(prev => ({ ...prev, expenseDate: e.target.value }))
+              }
+              required
+            />
+          </div>
 
-            <div>
-              <Label htmlFor="paidBy">Paid By</Label>
-              <Select
-                value={form.paidBy}
-                onValueChange={(value) =>
-                  setForm((prev) => ({ ...prev, paidBy: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select user" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {user.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label htmlFor="paidBy">Paid By</Label>
+            <Select
+              value={form.paidBy}
+              onValueChange={value =>
+                setForm(prev => ({ ...prev, paidBy: value }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select user" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.map(user => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <div>
             <Label htmlFor="remarks">Remarks</Label>
             <Textarea
               id="remarks"
               value={form.remarks}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, remarks: e.target.value }))
+              onChange={e =>
+                setForm(prev => ({ ...prev, remarks: e.target.value }))
               }
               placeholder="Additional notes..."
             />
