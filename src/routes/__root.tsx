@@ -3,13 +3,13 @@ import {
   Scripts,
   createRootRoute,
   useRouterState,
-} from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+} from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
 
-import appCss from '../styles.css?url'
+import appCss from "../styles.css?url";
 
-import Header from '../components/Header'
+import Header from "../components/Header";
 import { getSession } from "@/server/get-session";
 
 export const Route = createRootRoute({
@@ -43,7 +43,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className='dark'> 
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
@@ -51,11 +51,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <AppShell>{children}</AppShell>
         <TanStackDevtools
           config={{
-            position: 'bottom-right',
+            position: "bottom-right",
           }}
           plugins={[
             {
-              name: 'Tanstack Router',
+              name: "Tanstack Router",
               render: <TanStackRouterDevtoolsPanel />,
             },
           ]}
@@ -63,20 +63,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
 
 function AppShell({ children }: { children: React.ReactNode }) {
   const {
     location: { pathname },
-  } = useRouterState()
+  } = useRouterState();
+  const { session } = Route.useRouteContext();
 
-  const hideHeader = pathname === '/sign-in' || pathname === '/sign-up' || pathname === '/'
+  const hideHeader =
+    pathname === "/sign-in" || pathname === "/sign-up" || pathname === "/";
 
   return (
     <>
-      {!hideHeader && <Header />}
+      {!hideHeader && <Header session={session} />}
       {children}
     </>
-  )
+  );
 }
