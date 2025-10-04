@@ -23,9 +23,16 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-export const Route = createFileRoute('/admin/categories')({
+export const Route = createFileRoute("/admin/categories")({
   component: RouteComponent,
-})
+  head: () => ({
+    meta: [
+      {
+        title: "Admin - Expense Categories",
+      },
+    ],
+  }),
+});
 
 type Category = {
   id: string
