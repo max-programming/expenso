@@ -6,6 +6,10 @@ export const users = pgTable("users", {
   email: text().notNull().unique(),
   emailVerified: boolean().default(false).notNull(),
   image: text(),
+  role: text(),
+  banned: boolean().default(false),
+  banReason: text(),
+  banExpires: timestamp(),
   createdAt: timestamp()
     .$defaultFn(() => new Date())
     .notNull(),
@@ -27,7 +31,8 @@ export const sessions = pgTable("sessions", {
     .notNull(),
   ipAddress: text(),
   userAgent: text(),
-  userId: text("user_id")
+  impersonatedBy: text(),
+  userId: text()
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 });
