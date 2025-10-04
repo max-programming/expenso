@@ -1,28 +1,40 @@
-"use client"
+"use client";
 
-import { useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
-import type { ApprovalRule, Category, RuleType, User } from "./types"
-import { StepEditor } from "./StepEditor"
+import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import type { ApprovalRule, Category, RuleType, User } from "./types";
+import { StepEditor } from "./StepEditor";
+import type { ExpenseCategoriesId } from "@/lib/id";
 
 type Props = {
-  open: boolean
-  onOpenChange: (v: boolean) => void
-  editingId: string | null
-  form: Partial<ApprovalRule>
-  setForm: (f: Partial<ApprovalRule>) => void
-  users: User[]
-  categories: Category[]
-  onSave: () => void
-  onAddStep: () => void
-}
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  editingId: string | null;
+  form: Partial<ApprovalRule>;
+  setForm: (f: Partial<ApprovalRule>) => void;
+  users: User[];
+  categories: Category[];
+  onSave: () => void;
+  onAddStep: () => void;
+};
 
 export function ApprovalRuleForm({
   open,
@@ -35,19 +47,24 @@ export function ApprovalRuleForm({
   onSave,
   onAddStep,
 }: Props) {
-  const title = editingId ? "Edit Rule" : "Add New Rule"
+  const title = editingId ? "Edit Rule" : "Add New Rule";
 
-  const needsPercentage = form.ruleType === "percentage" || form.ruleType === "hybrid"
-  const needsSpecificApprover = form.ruleType === "specific_approver" || form.ruleType === "hybrid"
-  const needsSteps = form.ruleType === "sequential" || form.ruleType === "hybrid"
+  const needsPercentage =
+    form.ruleType === "percentage" || form.ruleType === "hybrid";
+  const needsSpecificApprover =
+    form.ruleType === "specific_approver" || form.ruleType === "hybrid";
+  const needsSteps =
+    form.ruleType === "sequential" ||
+    form.ruleType === "hybrid" ||
+    form.ruleType === "percentage";
 
   const isValid = useMemo(() => {
-    if (!form.name || !form.ruleType) return false
-    if (needsPercentage && !form.approvalPercentage) return false
-    if (needsSpecificApprover && !form.specificApproverId) return false
-    if (needsSteps && !(form.steps && form.steps.length > 0)) return false
-    return true
-  }, [form, needsPercentage, needsSpecificApprover, needsSteps])
+    if (!form.name || !form.ruleType) return false;
+    if (needsPercentage && !form.approvalPercentage) return false;
+    if (needsSpecificApprover && !form.specificApproverId) return false;
+    if (needsSteps && !(form.steps && form.steps.length > 0)) return false;
+    return true;
+  }, [form, needsPercentage, needsSpecificApprover, needsSteps]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -72,11 +89,13 @@ export function ApprovalRuleForm({
               <div>
                 <Label htmlFor="category">Specific Category</Label>
                 <Select
-                  value={form.specificCategoryId ? form.specificCategoryId : "all"}
+                  value={
+                    form.specificCategoryId ? form.specificCategoryId : "all"
+                  }
                   onValueChange={(value) =>
                     setForm({
                       ...form,
-                      specificCategoryId: value === "all" ? undefined : value,
+                      specificCategoryId: value === "all" ? undefined : (value as ExpenseCategoriesId),
                     })
                   }
                 >
@@ -99,7 +118,9 @@ export function ApprovalRuleForm({
                 <Textarea
                   id="description"
                   value={form.description || ""}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
                   placeholder="Describe when and how this rule should be applied..."
                   className="min-h-20"
                 />
@@ -115,7 +136,9 @@ export function ApprovalRuleForm({
                 <Label htmlFor="ruleType">Rule Type</Label>
                 <Select
                   value={form.ruleType || "sequential"}
-                  onValueChange={(value) => setForm({ ...form, ruleType: value as RuleType })}
+                  onValueChange={(value) =>
+                    setForm({ ...form, ruleType: value as RuleType })
+                  }
                 >
                   <SelectTrigger id="ruleType">
                     <SelectValue />
@@ -123,28 +146,22 @@ export function ApprovalRuleForm({
                   <SelectContent>
                     <SelectItem value="sequential">Sequential</SelectItem>
                     <SelectItem value="percentage">Percentage</SelectItem>
-                    <SelectItem value="specific_approver">Specific Approver</SelectItem>
+                    <SelectItem value="specific_approver">
+                      Specific Approver
+                    </SelectItem>
                     <SelectItem value="hybrid">Hybrid</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div>
-                <Label htmlFor="amount">Amount Threshold</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  value={form.amount || ""}
-                  onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                  placeholder="Optional minimum amount"
-                />
-              </div>
 
               <div className="flex items-center gap-2 pt-6">
                 <Checkbox
                   id="managerFirst"
                   checked={form.isManagerFirst || false}
-                  onCheckedChange={(checked) => setForm({ ...form, isManagerFirst: checked as boolean })}
+                  onCheckedChange={(checked) =>
+                    setForm({ ...form, isManagerFirst: checked as boolean })
+                  }
                 />
                 <Label htmlFor="managerFirst">Manager approves first</Label>
               </div>
@@ -163,7 +180,9 @@ export function ApprovalRuleForm({
                     onChange={(e) =>
                       setForm({
                         ...form,
-                        approvalPercentage: e.target.value ? Number.parseInt(e.target.value) : undefined,
+                        approvalPercentage: e.target.value
+                          ? Number.parseInt(e.target.value)
+                          : undefined,
                       })
                     }
                     placeholder="e.g., 60"
@@ -177,11 +196,14 @@ export function ApprovalRuleForm({
                 <div>
                   <Label htmlFor="specificApprover">Specific Approver</Label>
                   <Select
-                    value={form.specificApproverId ? form.specificApproverId : "none"}
+                    value={
+                      form.specificApproverId ? form.specificApproverId : "none"
+                    }
                     onValueChange={(value) =>
                       setForm({
                         ...form,
-                        specificApproverId: value === "none" ? undefined : value,
+                        specificApproverId:
+                          value === "none" ? undefined : value,
                       })
                     }
                   >
@@ -207,9 +229,12 @@ export function ApprovalRuleForm({
                   steps={form.steps || []}
                   users={users}
                   onChange={(updated) => setForm({ ...form, steps: updated })}
+                  showSequence={form.ruleType === "sequential"}
                 />
                 <Button type="button" variant="outline" onClick={onAddStep}>
-                  Add Step
+                  {form.ruleType === "percentage" || form.ruleType === "hybrid"
+                    ? "Add Approver"
+                    : "Add Step"}
                 </Button>
               </div>
             )}
@@ -226,5 +251,5 @@ export function ApprovalRuleForm({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -66,7 +66,7 @@ export const expenseCategories = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  table => ({
+  (table) => ({
     uniqueCompanyCategory: unique().on(table.companyId, table.name),
   })
 );
@@ -127,9 +127,6 @@ export const approvalRules = pgTable("approval_rules", {
   ruleType: approvalRuleTypeEnum("rule_type").notNull(),
   isManagerFirst: boolean("is_manager_first").default(true).notNull(),
 
-  // Threshold settings
-  amount: numeric("amount"),
-
   // Conditional rules
   approvalPercentage: integer("approval_percentage"),
   specificApproverId: text("specific_approver_id").references(() => users.id),
@@ -159,7 +156,7 @@ export const approvalSteps = pgTable(
     // stepName: varchar("step_name", { length: 100 }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  table => ({
+  (table) => ({
     uniqueRuleStep: unique().on(table.approvalRuleId, table.stepOrder),
   })
 );
