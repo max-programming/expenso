@@ -1,10 +1,15 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  useRouterState,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import Header from '../components/Header'
-
 import appCss from '../styles.css?url'
+
+import Header from '../components/Header'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -33,13 +38,12 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className='dark'> 
       <head>
         <HeadContent />
       </head>
       <body>
-        <Header />
-        {children}
+        <AppShell>{children}</AppShell>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
@@ -54,5 +58,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  )
+}
+
+function AppShell({ children }: { children: React.ReactNode }) {
+  const {
+    location: { pathname },
+  } = useRouterState()
+
+  const hideHeader = pathname === '/sign-in' || pathname === '/sign-up'
+
+  return (
+    <>
+      {!hideHeader && <Header />}
+      {children}
+    </>
   )
 }
