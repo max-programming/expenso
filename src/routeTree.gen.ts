@@ -15,7 +15,6 @@ import { Route as ManagerRouteRouteImport } from './routes/manager/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManagerApprovalsRouteImport } from './routes/manager/approvals'
-import { Route as EmployeesViewRouteImport } from './routes/employees/view'
 import { Route as EmployeeExpensesRouteImport } from './routes/employee/expenses'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
@@ -58,11 +57,6 @@ const ManagerApprovalsRoute = ManagerApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
   getParentRoute: () => ManagerRouteRoute,
-} as any)
-const EmployeesViewRoute = EmployeesViewRouteImport.update({
-  id: '/employees/view',
-  path: '/employees/view',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const EmployeeExpensesRoute = EmployeeExpensesRouteImport.update({
   id: '/employee/expenses',
@@ -135,7 +129,6 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
   '/employee/expenses': typeof EmployeeExpensesRoute
-  '/employees/view': typeof EmployeesViewRoute
   '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -156,7 +149,6 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
   '/employee/expenses': typeof EmployeeExpensesRoute
-  '/employees/view': typeof EmployeesViewRoute
   '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -178,7 +170,6 @@ export interface FileRoutesById {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
   '/employee/expenses': typeof EmployeeExpensesRoute
-  '/employees/view': typeof EmployeesViewRoute
   '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -201,7 +192,6 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/users'
     | '/employee/expenses'
-    | '/employees/view'
     | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
@@ -222,7 +212,6 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/users'
     | '/employee/expenses'
-    | '/employees/view'
     | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
@@ -243,7 +232,6 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/users'
     | '/employee/expenses'
-    | '/employees/view'
     | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
@@ -262,7 +250,6 @@ export interface RootRouteChildren {
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   EmployeeExpensesRoute: typeof EmployeeExpensesRoute
-  EmployeesViewRoute: typeof EmployeesViewRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
@@ -316,13 +303,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/manager/approvals'
       preLoaderRoute: typeof ManagerApprovalsRouteImport
       parentRoute: typeof ManagerRouteRoute
-    }
-    '/employees/view': {
-      id: '/employees/view'
-      path: '/employees/view'
-      fullPath: '/employees/view'
-      preLoaderRoute: typeof EmployeesViewRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/employee/expenses': {
       id: '/employee/expenses'
@@ -446,7 +426,6 @@ const rootRouteChildren: RootRouteChildren = {
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   EmployeeExpensesRoute: EmployeeExpensesRoute,
-  EmployeesViewRoute: EmployeesViewRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,
