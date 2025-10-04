@@ -1,18 +1,28 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Home, Menu, Server, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { getSession } from "@/server/get-session";
+import { Button } from "./ui/button";
+import { createServerFn } from "@tanstack/react-start";
+import { auth } from "@/lib/auth";
+import { authMiddleware } from "@/server/auth-middleware";
+import { getRequest } from "@tanstack/react-start/server";
+
+const signOut = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async () => {
+    const { headers } = getRequest();
+    await auth.api.signOut({ headers });
+  });
 
 export default function Header({
   session,
 }: {
   session: Awaited<ReturnType<typeof getSession>> | null;
 }) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [groupedExpanded, setGroupedExpanded] = useState<
-    Record<string, boolean>
-  >({});
 
   return (
     <>
@@ -114,6 +124,15 @@ export default function Header({
                 </Link>
               </>
             ) : null)}
+          {session && (
+            <Button
+              onClick={() => signOut().then(() => navigate({ to: "/sign-in" }))}
+              className="gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2 w-full"
+              variant="ghost"
+            >
+              <span className="font-medium">Logout</span>
+            </Button>
+          )}
         </nav>
       </aside>
     </>
