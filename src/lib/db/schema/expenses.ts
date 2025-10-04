@@ -24,7 +24,6 @@ import {
   ExpenseApprovalsId,
   ExpenseCategoriesId,
   ExpensesId,
-  UuidType,
 } from "@/lib/id";
 
 export const expenseStatusEnum = pgEnum("expense_status", [
@@ -67,7 +66,7 @@ export const expenseCategories = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => ({
+  table => ({
     uniqueCompanyCategory: unique().on(table.companyId, table.name),
   })
 );
@@ -82,7 +81,6 @@ export const expenses = pgTable("expenses", {
     .notNull()
     .references(() => companies.id, { onDelete: "cascade" }),
   employeeId: text("employee_id")
-    .$type<UuidType>()
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   categoryId: text("category_id")
@@ -97,7 +95,7 @@ export const expenses = pgTable("expenses", {
   description: text("description").notNull(),
   expenseDate: date("expense_date").notNull(),
 
-  paidBy: text("paid_by").$type<UuidType>().references(() => users.id, { onDelete: "cascade" }),
+  paidBy: text("paid_by").references(() => users.id, { onDelete: "cascade" }),
 
   status: expenseStatusEnum("status").default("draft").notNull(),
   submittedAt: timestamp("submitted_at"),
@@ -134,9 +132,7 @@ export const approvalRules = pgTable("approval_rules", {
 
   // Conditional rules
   approvalPercentage: integer("approval_percentage"),
-  specificApproverId: text("specific_approver_id")
-    .$type<UuidType>()
-    .references(() => users.id),
+  specificApproverId: text("specific_approver_id").references(() => users.id),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
@@ -157,14 +153,13 @@ export const approvalSteps = pgTable(
       .notNull()
       .references(() => approvalRules.id, { onDelete: "cascade" }),
     approverId: text("approver_id")
-      .$type<UuidType>()
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     stepOrder: integer("step_order").notNull(),
     // stepName: varchar("step_name", { length: 100 }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => ({
+  table => ({
     uniqueRuleStep: unique().on(table.approvalRuleId, table.stepOrder),
   })
 );
@@ -184,7 +179,6 @@ export const expenseApprovals = pgTable("expense_approvals", {
       onDelete: "set null",
     }),
   approverId: text("approver_id")
-    .$type<UuidType>()
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 

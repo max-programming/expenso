@@ -82,30 +82,30 @@ function RouteComponent() {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
 
-  async function onSubmit(data: SignUpForm) {
+  function onSubmit(data: SignUpForm) {
     if (data.password !== data.passwordRepeat) {
       form.setError("passwordRepeat", { message: "Passwords do not match" });
       return;
     }
 
-    try {
-      const response = await signUpMutation.mutateAsync({
+    signUpMutation.mutate(
+      {
         data: {
           name: data.name,
           email: data.email,
           password: data.password,
           country: data.country,
         },
-      });
-
-      if (response.success) {
-        navigate({ to: "/sign-in" });
+      },
+      {
+        onSuccess() {
+          navigate({ to: "/sign-in" });
+        },
+        onError(err) {
+          form.setError("root", { message: err.message });
+        },
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        form.setError("root", { message: err.message });
-      }
-    }
+    );
   }
 
   return (
