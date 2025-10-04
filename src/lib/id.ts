@@ -16,3 +16,6 @@ export type ApprovalStepsId = InferId<typeof approvalStepsIdHelper>;
 export type ExpenseApprovalsId = InferId<typeof expenseApprovalsIdHelper>;
 
 export const zCompanyId = createZodIdSchema(companyIdHelper);
+export const zExpenseCategoriesId = createZodIdSchema(
+  expenseCategoriesIdHelper
+);
