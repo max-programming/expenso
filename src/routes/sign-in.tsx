@@ -21,6 +21,8 @@ import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInUser } from "@/server/sign-in-user";
+import { useMutation } from "@tanstack/react-query";
+import { Spinner } from "@/components/ui/spinner";
 
 export const Route = createFileRoute("/sign-in")({
   component: RouteComponent,
@@ -47,6 +49,9 @@ const signInForm = z.object({
 function RouteComponent() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
+  const signInMutation = useMutation({
+    mutationFn: signInUser,
+  });
   const form = useForm<SignInForm>({
     resolver: zodResolver(signInForm),
     defaultValues: {
@@ -55,23 +60,23 @@ function RouteComponent() {
     },
   });
 
-  async function onSubmit(data: SignInForm) {
-    try {
-      const response = await signInUser({
+  function onSubmit(data: SignInForm) {
+    signInMutation.mutate(
+      {
         data: {
           email: data.email,
           password: data.password,
         },
-      });
-
-      if (response.success) {
-        navigate({ to: "/" });
+      },
+      {
+        onSuccess() {
+          navigate({ to: "/" });
+        },
+        onError(err) {
+          form.setError("root", { message: err.message });
+        },
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        form.setError("root", { message: err.message });
-      }
-    }
+    );
   }
 
   return (
@@ -136,8 +141,19 @@ function RouteComponent() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" size="lg">
-                Sign in
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                disabled={signInMutation.isPending}
+              >
+                {signInMutation.isPending ? (
+                  <>
+                    <Spinner /> Signing in...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
               </Button>
 
               {form.formState.errors && (
