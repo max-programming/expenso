@@ -20,6 +20,13 @@ import { Camera, Upload, Scan } from "lucide-react";
 import type { Expense } from "./types";
 import type { ExpenseCategoriesId as ExpenseCatId } from "@/lib/id";
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 interface AddExpenseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -34,12 +41,14 @@ interface AddExpenseDialogProps {
       | "updatedAt"
     >
   ) => void;
+  users: User[];
 }
 
 export function AddExpenseDialog({
   open,
   onOpenChange,
   onAddExpense,
+  users,
 }: AddExpenseDialogProps) {
   const [form, setForm] = useState({
     categoryId: "",
@@ -48,6 +57,7 @@ export function AddExpenseDialog({
     currencyCode: "INR",
     expenseDate: "",
     paidBy: "",
+    remarks: "",
   });
   const [isProcessingOCR, setIsProcessingOCR] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -122,6 +132,7 @@ export function AddExpenseDialog({
       currencyCode: "INR",
       expenseDate: "",
       paidBy: "",
+      remarks: "",
     });
 
     onOpenChange(false);
@@ -129,7 +140,7 @@ export function AddExpenseDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Add New Expense</DialogTitle>
         </DialogHeader>
@@ -211,7 +222,6 @@ export function AddExpenseDialog({
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="amount">Amount *</Label>
               <Input
@@ -246,18 +256,50 @@ export function AddExpenseDialog({
                 </SelectContent>
               </Select>
             </div>
-          </div>
+
+            <div>
+              <Label htmlFor="expenseDate">Expense Date *</Label>
+              <Input
+                id="expenseDate"
+                type="date"
+                value={form.expenseDate}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, expenseDate: e.target.value }))
+                }
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="paidBy">Paid By</Label>
+              <Select
+                value={form.paidBy}
+                onValueChange={(value) =>
+                  setForm((prev) => ({ ...prev, paidBy: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select user" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
           <div>
-            <Label htmlFor="expenseDate">Expense Date *</Label>
-            <Input
-              id="expenseDate"
-              type="date"
-              value={form.expenseDate}
+            <Label htmlFor="remarks">Remarks</Label>
+            <Textarea
+              id="remarks"
+              value={form.remarks}
               onChange={(e) =>
-                setForm((prev) => ({ ...prev, expenseDate: e.target.value }))
+                setForm((prev) => ({ ...prev, remarks: e.target.value }))
               }
-              required
+              placeholder="Additional notes..."
             />
           </div>
 

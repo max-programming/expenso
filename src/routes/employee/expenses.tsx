@@ -8,9 +8,11 @@ import {
   createExpenseColumns,
   AddExpenseDialog,
 } from "@/components/expenses";
+import { getUsers } from "@/server/users/getUsers";
 
 export const Route = createFileRoute("/employee/expenses")({
   component: RouteComponent,
+  loader: () => getUsers(),
 });
 
 const initialExpenses: Expense[] = [
@@ -87,6 +89,7 @@ const initialExpenses: Expense[] = [
 ];
 
 function RouteComponent() {
+  const users = Route.useLoaderData();
   const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
 
@@ -155,6 +158,10 @@ function RouteComponent() {
         open={isAddExpenseOpen}
         onOpenChange={setIsAddExpenseOpen}
         onAddExpense={handleAddExpense}
+        users={users.map((user: any) => ({
+          ...user,
+          role: user.role ?? "",
+        }))}
       />
     </div>
   );
