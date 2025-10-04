@@ -1,8 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { staticFunctionMiddleware } from "@tanstack/start-static-server-functions";
 
 export const getCountriesAndCurrencies = createServerFn({ method: "GET" })
-  .middleware([staticFunctionMiddleware])
   .handler(async () => {
     const res = await fetch(
       "https://restcountries.com/v3.1/all?fields=name,currencies"
