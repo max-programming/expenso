@@ -17,9 +17,7 @@ export const users = pgTable("users", {
   banned: boolean().default(false),
   banReason: text(),
   banExpires: timestamp(),
-  companyId: text()
-    .references(() => companies.id, { onDelete: "cascade" })
-    .notNull(),
+  companyId: text().references(() => companies.id, { onDelete: "cascade" }),
   managerId: text().references((): AnyPgColumn => users.id),
   createdAt: timestamp()
     .$defaultFn(() => new Date())
