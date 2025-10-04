@@ -14,6 +14,8 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManagerApprovalsRouteImport } from './routes/manager/approvals'
+import { Route as EmployeesViewRouteImport } from './routes/employees/view'
+import { Route as EmployeeExpensesRouteImport } from './routes/employee/expenses'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminApprovalRulesRouteImport } from './routes/admin/approval-rules'
@@ -49,6 +51,16 @@ const IndexRoute = IndexRouteImport.update({
 const ManagerApprovalsRoute = ManagerApprovalsRouteImport.update({
   id: '/manager/approvals',
   path: '/manager/approvals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployeesViewRoute = EmployeesViewRouteImport.update({
+  id: '/employees/view',
+  path: '/employees/view',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployeeExpensesRoute = EmployeeExpensesRouteImport.update({
+  id: '/employee/expenses',
+  path: '/employee/expenses',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -115,6 +127,8 @@ export interface FileRoutesByFullPath {
   '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
+  '/employee/expenses': typeof EmployeeExpensesRoute
+  '/employees/view': typeof EmployeesViewRoute
   '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -133,6 +147,8 @@ export interface FileRoutesByTo {
   '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
+  '/employee/expenses': typeof EmployeeExpensesRoute
+  '/employees/view': typeof EmployeesViewRoute
   '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -152,6 +168,8 @@ export interface FileRoutesById {
   '/admin/approval-rules': typeof AdminApprovalRulesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/users': typeof AdminUsersRoute
+  '/employee/expenses': typeof EmployeeExpensesRoute
+  '/employees/view': typeof EmployeesViewRoute
   '/manager/approvals': typeof ManagerApprovalsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -172,6 +190,8 @@ export interface FileRouteTypes {
     | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
+    | '/employee/expenses'
+    | '/employees/view'
     | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
@@ -190,6 +210,8 @@ export interface FileRouteTypes {
     | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
+    | '/employee/expenses'
+    | '/employees/view'
     | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
@@ -208,6 +230,8 @@ export interface FileRouteTypes {
     | '/admin/approval-rules'
     | '/admin/categories'
     | '/admin/users'
+    | '/employee/expenses'
+    | '/employees/view'
     | '/manager/approvals'
     | '/api/auth/$'
     | '/demo/api/names'
@@ -224,6 +248,8 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  EmployeeExpensesRoute: typeof EmployeeExpensesRoute
+  EmployeesViewRoute: typeof EmployeesViewRoute
   ManagerApprovalsRoute: typeof ManagerApprovalsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
@@ -270,6 +296,20 @@ declare module '@tanstack/react-router' {
       path: '/manager/approvals'
       fullPath: '/manager/approvals'
       preLoaderRoute: typeof ManagerApprovalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employees/view': {
+      id: '/employees/view'
+      path: '/employees/view'
+      fullPath: '/employees/view'
+      preLoaderRoute: typeof EmployeesViewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employee/expenses': {
+      id: '/employee/expenses'
+      path: '/employee/expenses'
+      fullPath: '/employee/expenses'
+      preLoaderRoute: typeof EmployeeExpensesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
@@ -373,6 +413,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  EmployeeExpensesRoute: EmployeeExpensesRoute,
+  EmployeesViewRoute: EmployeesViewRoute,
   ManagerApprovalsRoute: ManagerApprovalsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
